@@ -44,14 +44,23 @@ def update():
         movingwordsrect.left=800
 
 def on_mouse_down(pos):
+    global timer,q,qlist,gameisgone
     box=1
     for i in answerrect:
         if i.collidepoint(pos):
             if box is int(q[5]):
                 correctans()
             else:
-                gameover()
+                q=listseparate()
+                timer=10
+                
         box+=1
+    if skiprect.collidepoint(pos):
+        if qlist and not gameisgone:
+            q=listseparate()
+            timer=10
+        else:
+            gameover()
 
 def correctans():
     global timer,q,score,qlist
@@ -61,7 +70,7 @@ def correctans():
         timer=10
     else:
         gameover()
-
+        
 def gameover():
     global q,timer,gameisgone,score
     boo=f"You have lost - you managed to answer {score} questions correct."
@@ -83,5 +92,11 @@ def listseparate():
 loadnlist()
 q=listseparate()
 
-clock.schedhule_interval(update_time_left,1)
+def update_time_left():
+    global timer
+    timer-=1
+    if timer<1:
+        gameover()
+
+clock.schedule_interval(update_time_left,1)
 pgzrun.go()
